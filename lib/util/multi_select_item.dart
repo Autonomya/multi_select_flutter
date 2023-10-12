@@ -2,13 +2,16 @@
 class MultiSelectItem<T> {
   final T value;
   final String label;
+  final String? imageUrl;
 
   MultiSelectItem(
     this.value,
     this.label,
+    this.imageUrl,
   );
 
   MultiSelectItem.fromOther(MultiSelectItem<T> other)
       : value = other.value,
-        label = other.label;
+        label = other.label,
+        imageUrl = other.imageUrl;
 }

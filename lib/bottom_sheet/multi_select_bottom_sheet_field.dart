@@ -106,6 +106,9 @@ class MultiSelectBottomSheetField<V> extends FormField<List<V>> {
   /// Whether the user can dismiss the widget by tapping outside
   final bool isDismissible;
 
+  /// Whether the MultiSelect is an item image or not.
+  final bool isItemImage;
+
   final AutovalidateMode autoValidateMode;
   final FormFieldValidator<List<V>>? validator;
   final FormFieldSetter<List<V>>? onSaved;
@@ -148,6 +151,7 @@ class MultiSelectBottomSheetField<V> extends FormField<List<V>> {
     this.key,
     this.onSaved,
     this.validator,
+    this.isItemImage = false,
     this.autoValidateMode = AutovalidateMode.onUserInteraction,
   }) : super(
           key: key,
@@ -190,6 +194,7 @@ class MultiSelectBottomSheetField<V> extends FormField<List<V>> {
               checkColor: checkColor,
               state: state,
               isDismissible: isDismissible,
+              isItemImage: isItemImage,
             );
           },
         );
@@ -229,6 +234,7 @@ class _MultiSelectBottomSheetFieldView<V> extends StatefulWidget {
   final Color? checkColor;
   final bool isDismissible;
   final FormFieldState<List<V>> state;
+  final bool isItemImage;
 
   _MultiSelectBottomSheetFieldView({
     required this.items,
@@ -264,6 +270,7 @@ class _MultiSelectBottomSheetFieldView<V> extends StatefulWidget {
     required this.separateSelectedItems,
     this.checkColor,
     required this.isDismissible,
+    this.isItemImage = false,
   });
 
   @override
@@ -286,7 +293,7 @@ class __MultiSelectBottomSheetFieldViewState<V>
         return Container();
       } else {
         return Padding(
-          padding: const EdgeInsets.only(bottom: 8),
+          padding: EdgeInsets.only(bottom: chipDisplayItems.isNotEmpty ? 8 : 0),
           child: MultiSelectChipDisplay<V>(
             items: chipDisplayItems,
             colorator: widget.chipDisplay!.colorator ?? widget.colorator,
@@ -314,6 +321,7 @@ class __MultiSelectBottomSheetFieldViewState<V>
             scrollBar: widget.chipDisplay!.scrollBar,
             height: widget.chipDisplay!.height,
             chipWidth: widget.chipDisplay!.chipWidth,
+            isItemImage: widget.isItemImage,
           ),
         );
       }
@@ -331,6 +339,7 @@ class __MultiSelectBottomSheetFieldViewState<V>
           newValues.remove(item);
           widget.state.didChange(newValues);
         },
+        isItemImage: widget.isItemImage,
       );
     }
   }
@@ -377,6 +386,7 @@ class __MultiSelectBottomSheetFieldViewState<V>
             initialChildSize: widget.initialChildSize,
             minChildSize: widget.minChildSize,
             maxChildSize: widget.maxChildSize,
+            isItemImage: widget.isItemImage,
           );
         });
   }

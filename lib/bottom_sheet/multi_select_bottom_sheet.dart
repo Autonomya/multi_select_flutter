@@ -79,6 +79,9 @@ class MultiSelectBottomSheet<T> extends StatefulWidget
   /// Set the color of the check in the checkbox
   final Color? checkColor;
 
+  /// Has image
+  final bool isItemImage;
+
   MultiSelectBottomSheet({
     required this.items,
     this.initialValue = const [],
@@ -104,6 +107,7 @@ class MultiSelectBottomSheet<T> extends StatefulWidget
     this.selectedItemsTextStyle,
     this.separateSelectedItems = false,
     this.checkColor,
+    this.isItemImage = false,
   });
 
   @override
@@ -153,44 +157,77 @@ class _MultiSelectBottomSheetState<T> extends State<MultiSelectBottomSheet<T>> {
 
   /// Returns a ChoiceChip
   Widget _buildChipItem(MultiSelectItem<T> item) {
+    final hasImageUrl = item.imageUrl != null && item.imageUrl!.isNotEmpty;
+    final isItemSelected = _selectedValues.contains(item.value);
+
     return Padding(
       padding: const EdgeInsets.all(2),
-      child: ChoiceChip(
-        backgroundColor: widget.unselectedColor,
-        selectedColor:
-            widget.colorator != null && widget.colorator!(item.value) != null
-                ? widget.colorator!(item.value)
-                : widget.selectedColor != null
-                    ? widget.selectedColor
-                    : Theme.of(context).primaryColor.withOpacity(0.35),
-        label: Text(
-          item.label,
-          style: _selectedValues.contains(item.value)
-              ? TextStyle(
-                  color: widget.selectedItemsTextStyle?.color ??
-                      widget.colorator?.call(item.value) ??
-                      widget.selectedColor?.withOpacity(1) ??
-                      Theme.of(context).primaryColor,
-                  fontSize: widget.selectedItemsTextStyle != null
-                      ? widget.selectedItemsTextStyle!.fontSize
-                      : null,
-                )
-              : widget.itemsTextStyle,
-        ),
-        selected: _selectedValues.contains(item.value),
-        onSelected: (checked) {
-          setState(() {
-            if (checked) {
-              _selectedValues.add(item.value);
-            } else {
-              _selectedValues.remove(item.value);
-            }
-          });
-          if (widget.onSelectionChanged != null) {
-            widget.onSelectionChanged!(_selectedValues);
-          }
-        },
-      ),
+      child: hasImageUrl
+          ? GestureDetector(
+              onTap: () {
+                setState(() {
+                  if (isItemSelected) {
+                    _selectedValues.remove(item.value);
+                  } else {
+                    _selectedValues.add(item.value);
+                  }
+                });
+                if (widget.onSelectionChanged != null) {
+                  widget.onSelectionChanged!(_selectedValues);
+                }
+              },
+              child: CircleAvatar(
+                radius: 38,
+                backgroundColor:
+                    isItemSelected ? widget.selectedColor : Colors.transparent,
+                child: CircleAvatar(
+                  backgroundColor: Color.fromARGB(255, 230, 231, 245),
+                  radius: 35,
+                  child: Image.network(
+                    item.imageUrl!,
+                    height: 60,
+                    width: 60,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
+            )
+          : ChoiceChip(
+              backgroundColor: widget.unselectedColor,
+              selectedColor: widget.colorator != null &&
+                      widget.colorator!(item.value) != null
+                  ? widget.colorator!(item.value)
+                  : widget.selectedColor != null
+                      ? widget.selectedColor
+                      : Theme.of(context).primaryColor.withOpacity(0.35),
+              label: Text(
+                item.label,
+                style: _selectedValues.contains(item.value)
+                    ? TextStyle(
+                        color: widget.selectedItemsTextStyle?.color ??
+                            widget.colorator?.call(item.value) ??
+                            widget.selectedColor?.withOpacity(1) ??
+                            Theme.of(context).primaryColor,
+                        fontSize: widget.selectedItemsTextStyle != null
+                            ? widget.selectedItemsTextStyle!.fontSize
+                            : null,
+                      )
+                    : widget.itemsTextStyle,
+              ),
+              selected: isItemSelected,
+              onSelected: (checked) {
+                setState(() {
+                  if (checked) {
+                    _selectedValues.add(item.value);
+                  } else {
+                    _selectedValues.remove(item.value);
+                  }
+                });
+                if (widget.onSelectionChanged != null) {
+                  widget.onSelectionChanged!(_selectedValues);
+                }
+              },
+            ),
     );
   }
 
@@ -294,6 +331,8 @@ class _MultiSelectBottomSheetState<T> extends State<MultiSelectBottomSheet<T>> {
                           padding:
                               EdgeInsets.symmetric(vertical: 5, horizontal: 16),
                           child: Wrap(
+                            spacing: widget.isItemImage ? 5.0 : 0,
+                            runSpacing: widget.isItemImage ? 5.0 : 0,
                             children: _items.map(_buildChipItem).toList(),
                           ),
                         ),

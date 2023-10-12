@@ -187,6 +187,7 @@ class _MultiSelectChipFieldView<V> extends StatefulWidget
   final HorizontalScrollBar? scrollBar;
   final bool showHeader;
   final double? chipWidth;
+  final bool hasImage;
 
   _MultiSelectChipFieldView({
     required this.items,
@@ -216,6 +217,7 @@ class _MultiSelectChipFieldView<V> extends StatefulWidget
     this.scrollBar,
     this.showHeader = true,
     this.chipWidth,
+    this.hasImage = false,
   });
 
   /// This constructor allows a FormFieldState to be passed in. Called by MultiSelectChipField.
@@ -248,6 +250,7 @@ class _MultiSelectChipFieldView<V> extends StatefulWidget
         scrollBar = field.scrollBar,
         showHeader = field.showHeader,
         chipWidth = field.chipWidth,
+        hasImage = field.hasImage,
         state = state;
 
   @override
@@ -430,6 +433,8 @@ class __MultiSelectChipFieldViewState<V>
                       alignment: Alignment.centerLeft,
                       padding: EdgeInsets.symmetric(horizontal: 10),
                       child: Wrap(
+                        spacing: widget.hasImage ? 5.0 : 0,
+                        runSpacing: widget.hasImage ? 5.0 : 0,
                         children: widget.itemBuilder != null
                             ? _items
                                 .map((item) => widget.itemBuilder!(
@@ -465,83 +470,119 @@ class __MultiSelectChipFieldViewState<V>
   }
 
   Widget _buildItem(MultiSelectItem<V> item) {
+    final hasImageUrl = item.imageUrl != null && item.imageUrl!.isNotEmpty;
+    final isItemSelected = _selectedValues.contains(item.value);
+
     return Container(
       margin: EdgeInsets.all(0),
       padding: const EdgeInsets.all(2.0),
-      child: ChoiceChip(
-        shape: widget.chipShape as OutlinedBorder? ??
-            RoundedRectangleBorder(
-              side: BorderSide(
-                  color: widget.colorator != null &&
-                          widget.colorator!(item.value) != null &&
-                          _selectedValues.contains(item.value)
-                      ? widget.colorator!(item.value)!
-                      : widget.selectedChipColor ??
-                          Theme.of(context).primaryColor),
-              borderRadius: BorderRadius.vertical(
-                top: Radius.circular(15.0),
-                bottom: Radius.circular(15.0),
-              ),
-            ),
-        avatar: _selectedValues.contains(item.value)
-            ? widget.icon != null
-                ? Icon(
-                    widget.icon!.icon,
-                    color: widget.colorator != null &&
-                            widget.colorator!(item.value) != null
-                        ? widget.colorator!(item.value)!.withOpacity(1)
-                        : widget.icon!.color ??
-                            widget.selectedChipColor ??
-                            Theme.of(context).primaryColor,
-                  )
-                : null
-            : null,
-        label: Container(
-          width: widget.chipWidth,
-          child: Text(
-            item.label,
-            overflow: TextOverflow.ellipsis,
-            style: _selectedValues.contains(item.value)
-                ? TextStyle(
-                    color: widget.colorator != null &&
-                            widget.colorator!(item.value) != null
-                        ? widget.colorator!(item.value)!.withOpacity(1)
-                        : widget.selectedTextStyle != null
-                            ? widget.selectedTextStyle!.color
-                            : null)
-                : TextStyle(
-                    color: widget.textStyle != null
-                        ? widget.textStyle!.color ?? widget.chipColor
-                        : widget.chipColor,
-                    fontSize: widget.textStyle != null
-                        ? widget.textStyle!.fontSize
-                        : null,
-                  ),
-          ),
-        ),
-        selected: _selectedValues.contains(item.value),
-        backgroundColor: widget.chipColor ?? Colors.white70,
-        selectedColor:
-            widget.colorator != null && widget.colorator!(item.value) != null
-                ? widget.colorator!(item.value)
-                : widget.selectedChipColor != null
+      child: hasImageUrl
+          ? GestureDetector(
+              onTap: () {
+                if (!isItemSelected) {
+                  _selectedValues.add(item.value);
+                  if (widget.state != null) {
+                    widget.state!.didChange(_selectedValues);
+                  }
+                } else {
+                  _selectedValues.remove(item.value);
+                  if (widget.state != null) {
+                    widget.state!.didChange(_selectedValues);
+                  }
+                }
+                if (widget.onTap != null) widget.onTap!(_selectedValues);
+              },
+              child: CircleAvatar(
+                backgroundColor: isItemSelected
                     ? widget.selectedChipColor
-                    : Theme.of(context).primaryColor.withOpacity(0.33),
-        onSelected: (_) {
-          if (_) {
-            _selectedValues.add(item.value);
-            if (widget.state != null) {
-              widget.state!.didChange(_selectedValues);
-            }
-          } else {
-            _selectedValues.remove(item.value);
-            if (widget.state != null) {
-              widget.state!.didChange(_selectedValues);
-            }
-          }
-          if (widget.onTap != null) widget.onTap!(_selectedValues);
-        },
-      ),
+                    : Colors.transparent,
+                radius: 35,
+                child: CircleAvatar(
+                  backgroundColor: Color(0xffD2D4ED).withOpacity(0.3),
+                  radius: 35,
+                  child: Image.network(
+                    item.imageUrl!,
+                    height: 60,
+                    width: 60,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
+            )
+          : ChoiceChip(
+              shape: widget.chipShape as OutlinedBorder? ??
+                  RoundedRectangleBorder(
+                    side: BorderSide(
+                        color: widget.colorator != null &&
+                                widget.colorator!(item.value) != null &&
+                                _selectedValues.contains(item.value)
+                            ? widget.colorator!(item.value)!
+                            : widget.selectedChipColor ??
+                                Theme.of(context).primaryColor),
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(15.0),
+                      bottom: Radius.circular(15.0),
+                    ),
+                  ),
+              avatar: _selectedValues.contains(item.value)
+                  ? widget.icon != null
+                      ? Icon(
+                          widget.icon!.icon,
+                          color: widget.colorator != null &&
+                                  widget.colorator!(item.value) != null
+                              ? widget.colorator!(item.value)!.withOpacity(1)
+                              : widget.icon!.color ??
+                                  widget.selectedChipColor ??
+                                  Theme.of(context).primaryColor,
+                        )
+                      : null
+                  : null,
+              label: Container(
+                width: widget.chipWidth,
+                child: Text(
+                  item.label,
+                  overflow: TextOverflow.ellipsis,
+                  style: _selectedValues.contains(item.value)
+                      ? TextStyle(
+                          color: widget.colorator != null &&
+                                  widget.colorator!(item.value) != null
+                              ? widget.colorator!(item.value)!.withOpacity(1)
+                              : widget.selectedTextStyle != null
+                                  ? widget.selectedTextStyle!.color
+                                  : null)
+                      : TextStyle(
+                          color: widget.textStyle != null
+                              ? widget.textStyle!.color ?? widget.chipColor
+                              : widget.chipColor,
+                          fontSize: widget.textStyle != null
+                              ? widget.textStyle!.fontSize
+                              : null,
+                        ),
+                ),
+              ),
+              selected: isItemSelected,
+              backgroundColor: widget.chipColor ?? Colors.white70,
+              selectedColor: widget.colorator != null &&
+                      widget.colorator!(item.value) != null
+                  ? widget.colorator!(item.value)
+                  : widget.selectedChipColor != null
+                      ? widget.selectedChipColor
+                      : Theme.of(context).primaryColor.withOpacity(0.33),
+              onSelected: (_) {
+                if (_) {
+                  _selectedValues.add(item.value);
+                  if (widget.state != null) {
+                    widget.state!.didChange(_selectedValues);
+                  }
+                } else {
+                  _selectedValues.remove(item.value);
+                  if (widget.state != null) {
+                    widget.state!.didChange(_selectedValues);
+                  }
+                }
+                if (widget.onTap != null) widget.onTap!(_selectedValues);
+              },
+            ),
     );
   }
 }

@@ -48,6 +48,8 @@ class MultiSelectChipDisplay<V> extends StatelessWidget {
 
   bool? disabled;
 
+  bool isItemImage;
+
   MultiSelectChipDisplay({
     this.items,
     this.onTap,
@@ -62,6 +64,7 @@ class MultiSelectChipDisplay<V> extends StatelessWidget {
     this.scrollBar,
     this.height,
     this.chipWidth,
+    this.isItemImage = false,
   }) {
     this.disabled = false;
   }
@@ -81,6 +84,7 @@ class MultiSelectChipDisplay<V> extends StatelessWidget {
     this.scrollBar,
     this.height,
     this.chipWidth,
+    this.isItemImage = false,
   });
 
   @override
@@ -117,6 +121,8 @@ class MultiSelectChipDisplay<V> extends StatelessWidget {
                     ),
             )
           : Wrap(
+              spacing: isItemImage ? 5.0 : 0,
+              runSpacing: isItemImage ? 5.0 : 0,
               children: items != null
                   ? items!.map((item) => _buildItem(item!, context)).toList()
                   : <Widget>[
@@ -127,50 +133,70 @@ class MultiSelectChipDisplay<V> extends StatelessWidget {
   }
 
   Widget _buildItem(MultiSelectItem<V> item, BuildContext context) {
+    final hasImageUrl = item.imageUrl != null && item.imageUrl!.isNotEmpty;
+
     return Container(
       padding: const EdgeInsets.all(2.0),
-      child: ChoiceChip(
-        shape: shape as OutlinedBorder?,
-        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        avatar: icon != null
-            ? Icon(
-                icon!.icon,
-                color: colorator != null && colorator!(item.value) != null
-                    ? colorator!(item.value)!.withOpacity(1)
-                    : icon!.color ?? Theme.of(context).primaryColor,
-              )
-            : null,
-        label: Container(
-          width: chipWidth,
-          child: Text(
-            item.label,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              color: colorator != null && colorator!(item.value) != null
-                  ? textStyle != null
-                      ? textStyle!.color ?? colorator!(item.value)
-                      : colorator!(item.value)
-                  : textStyle != null && textStyle!.color != null
-                      ? textStyle!.color
-                      : chipColor != null
-                          ? chipColor!.withOpacity(1)
-                          : null,
-              fontSize: textStyle != null ? textStyle!.fontSize : null,
+      child: hasImageUrl
+          ? GestureDetector(
+              onTap: () {
+                if (onTap != null) {
+                  onTap!(item.value);
+                }
+              },
+              child: CircleAvatar(
+                backgroundColor: Color(0xffD2D4ED).withOpacity(0.3),
+                radius: 35,
+                child: Image.network(
+                  item.imageUrl!,
+                  height: 60,
+                  width: 60,
+                  fit: BoxFit.contain,
+                ),
+              ),
+            )
+          : ChoiceChip(
+              shape: shape as OutlinedBorder?,
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              avatar: icon != null
+                  ? Icon(
+                      icon!.icon,
+                      color: colorator != null && colorator!(item.value) != null
+                          ? colorator!(item.value)!.withOpacity(1)
+                          : icon!.color ?? Theme.of(context).primaryColor,
+                    )
+                  : null,
+              label: Container(
+                width: chipWidth,
+                child: Text(
+                  item.label,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: colorator != null && colorator!(item.value) != null
+                        ? textStyle != null
+                            ? textStyle!.color ?? colorator!(item.value)
+                            : colorator!(item.value)
+                        : textStyle != null && textStyle!.color != null
+                            ? textStyle!.color
+                            : chipColor != null
+                                ? chipColor!.withOpacity(1)
+                                : null,
+                    fontSize: textStyle != null ? textStyle!.fontSize : null,
+                  ),
+                ),
+              ),
+              selected: items!.contains(item),
+              selectedColor: colorator != null && colorator!(item.value) != null
+                  ? colorator!(item.value)
+                  : chipColor != null
+                      ? chipColor
+                      : Theme.of(context).primaryColor.withOpacity(0.33),
+              onSelected: (_) {
+                if (onTap != null) {
+                  onTap!(item.value);
+                }
+              },
             ),
-          ),
-        ),
-        selected: items!.contains(item),
-        selectedColor: colorator != null && colorator!(item.value) != null
-            ? colorator!(item.value)
-            : chipColor != null
-                ? chipColor
-                : Theme.of(context).primaryColor.withOpacity(0.33),
-        onSelected: (_) {
-          if (onTap != null) {
-            onTap!(item.value);
-          }
-        },
-      ),
     );
   }
 }
