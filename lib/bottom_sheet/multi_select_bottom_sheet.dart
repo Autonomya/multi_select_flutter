@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../util/multi_select_item.dart';
 import '../util/multi_select_actions.dart';
@@ -183,11 +184,15 @@ class _MultiSelectBottomSheetState<T> extends State<MultiSelectBottomSheet<T>> {
                 child: CircleAvatar(
                   backgroundColor: Color.fromARGB(255, 230, 231, 245),
                   radius: 35,
-                  child: Image.network(
-                    item.imageUrl!,
+                  child: CachedNetworkImage(
+                    imageUrl: item.imageUrl!,
                     height: 60,
                     width: 60,
                     fit: BoxFit.contain,
+                    placeholder: (context, url) => CircularProgressIndicator(
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
+                    errorWidget: (context, url, error) => Icon(Icons.error),
                   ),
                 ),
               ),

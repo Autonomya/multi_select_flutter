@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../util/horizontal_scrollbar.dart';
 import '../util/multi_select_item.dart';
@@ -147,11 +148,15 @@ class MultiSelectChipDisplay<V> extends StatelessWidget {
               child: CircleAvatar(
                 backgroundColor: Color(0xffD2D4ED).withOpacity(0.3),
                 radius: 35,
-                child: Image.network(
-                  item.imageUrl!,
+                child: CachedNetworkImage(
+                  imageUrl: item.imageUrl!,
                   height: 60,
                   width: 60,
                   fit: BoxFit.contain,
+                  placeholder: (context, url) => CircularProgressIndicator(
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
+                  errorWidget: (context, url, error) => Icon(Icons.error),
                 ),
               ),
             )
