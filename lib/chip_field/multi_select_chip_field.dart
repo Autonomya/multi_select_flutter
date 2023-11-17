@@ -434,6 +434,9 @@ class __MultiSelectChipFieldViewState<V>
                       alignment: Alignment.centerLeft,
                       padding: EdgeInsets.symmetric(horizontal: 10),
                       child: Wrap(
+                        alignment: widget.hasImage
+                            ? WrapAlignment.center
+                            : WrapAlignment.start,
                         spacing: widget.hasImage ? 5.0 : 0,
                         runSpacing: widget.hasImage ? 5.0 : 0,
                         children: widget.itemBuilder != null

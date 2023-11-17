@@ -336,6 +336,9 @@ class _MultiSelectBottomSheetState<T> extends State<MultiSelectBottomSheet<T>> {
                           padding:
                               EdgeInsets.symmetric(vertical: 5, horizontal: 16),
                           child: Wrap(
+                            alignment: widget.isItemImage
+                                ? WrapAlignment.center
+                                : WrapAlignment.start,
                             spacing: widget.isItemImage ? 5.0 : 0,
                             runSpacing: widget.isItemImage ? 5.0 : 0,
                             children: _items.map(_buildChipItem).toList(),

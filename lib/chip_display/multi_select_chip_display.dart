@@ -122,6 +122,8 @@ class MultiSelectChipDisplay<V> extends StatelessWidget {
                     ),
             )
           : Wrap(
+              alignment:
+                  isItemImage ? WrapAlignment.center : WrapAlignment.start,
               spacing: isItemImage ? 5.0 : 0,
               runSpacing: isItemImage ? 5.0 : 0,
               children: items != null
