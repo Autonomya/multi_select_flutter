@@ -177,22 +177,30 @@ class _MultiSelectBottomSheetState<T> extends State<MultiSelectBottomSheet<T>> {
                   widget.onSelectionChanged!(_selectedValues);
                 }
               },
-              child: CircleAvatar(
-                radius: 38,
-                backgroundColor:
-                    isItemSelected ? widget.selectedColor : Colors.transparent,
-                child: CircleAvatar(
-                  backgroundColor: Color.fromARGB(255, 230, 231, 245),
-                  radius: 35,
-                  child: CachedNetworkImage(
-                    imageUrl: item.imageUrl!,
-                    height: 60,
-                    width: 60,
-                    fit: BoxFit.contain,
-                    placeholder: (context, url) => CircularProgressIndicator(
-                      color: Theme.of(context).colorScheme.secondary,
+              child: SizedBox(
+                width: 95,
+                height: 95,
+                child: Center(
+                  child: CircleAvatar(
+                    radius: 38,
+                    backgroundColor: isItemSelected
+                        ? widget.selectedColor
+                        : Color(0xffD2D4ED),
+                    child: CircleAvatar(
+                      backgroundColor: Color.fromARGB(255, 230, 231, 245),
+                      radius: 35,
+                      child: CachedNetworkImage(
+                        imageUrl: item.imageUrl!,
+                        height: 100,
+                        width: 100,
+                        fit: BoxFit.contain,
+                        placeholder: (context, url) =>
+                            CircularProgressIndicator(
+                          color: Theme.of(context).colorScheme.secondary,
+                        ),
+                        errorWidget: (context, url, error) => Icon(Icons.error),
+                      ),
                     ),
-                    errorWidget: (context, url, error) => Icon(Icons.error),
                   ),
                 ),
               ),
@@ -295,8 +303,12 @@ class _MultiSelectBottomSheetState<T> extends State<MultiSelectBottomSheet<T>> {
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                             child: widget.title ??
                                 Text(
-                                  "Select",
-                                  style: TextStyle(fontSize: 18),
+                                  "Sélectionner / Désélectionner",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xff293f95),
+                                  ),
                                 ),
                           ),
                     widget.searchable
@@ -329,22 +341,38 @@ class _MultiSelectBottomSheetState<T> extends State<MultiSelectBottomSheet<T>> {
                           return _buildListItem(_items[index]);
                         },
                       )
-                    : SingleChildScrollView(
-                        controller: scrollController,
-                        child: Container(
-                          width: double.infinity,
-                          padding:
-                              EdgeInsets.symmetric(vertical: 5, horizontal: 16),
-                          child: Wrap(
-                            alignment: widget.isItemImage
-                                ? WrapAlignment.center
-                                : WrapAlignment.start,
-                            spacing: widget.isItemImage ? 5.0 : 0,
-                            runSpacing: widget.isItemImage ? 5.0 : 0,
-                            children: _items.map(_buildChipItem).toList(),
+                    : widget.isItemImage
+                        ? Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 16),
+                            child: GridView.builder(
+                              cacheExtent: 200,
+                              controller: scrollController,
+                              itemCount: _items.length,
+                              itemBuilder: (context, index) =>
+                                  _buildChipItem(_items[index]),
+                              gridDelegate:
+                                  SliverGridDelegateWithMaxCrossAxisExtent(
+                                maxCrossAxisExtent: 100,
+                                crossAxisSpacing: 5,
+                                mainAxisSpacing: 5,
+                              ),
+                            ),
+                          )
+                        : SingleChildScrollView(
+                            controller: scrollController,
+                            child: Container(
+                              width: double.infinity,
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 5, horizontal: 16),
+                              child: Wrap(
+                                alignment: WrapAlignment.start,
+                                spacing: 0,
+                                runSpacing: 0,
+                                children: _items.map(_buildChipItem).toList(),
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
               ),
               Container(
                 padding: EdgeInsets.all(10),
@@ -358,7 +386,7 @@ class _MultiSelectBottomSheetState<T> extends State<MultiSelectBottomSheet<T>> {
                         },
                         child: widget.cancelText ??
                             Text(
-                              "CANCEL",
+                              "Annuler",
                               style: TextStyle(
                                 color: (widget.selectedColor != null &&
                                         widget.selectedColor !=
