@@ -322,6 +322,7 @@ class __MultiSelectDialogFieldViewState<V>
     await showDialog(
       barrierColor: widget.barrierColor,
       barrierDismissible: widget.isDismissible,
+      useRootNavigator: true,
       context: context,
       builder: (ctx) {
         return MultiSelectDialog<V>(

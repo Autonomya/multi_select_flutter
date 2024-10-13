@@ -354,6 +354,7 @@ class __MultiSelectBottomSheetFieldViewState<V>
               borderRadius: BorderRadius.vertical(top: Radius.circular(15.0)),
             ),
         isScrollControlled: true,
+        useRootNavigator: true,
         context: context,
         builder: (context) {
           return MultiSelectBottomSheet<V>(
