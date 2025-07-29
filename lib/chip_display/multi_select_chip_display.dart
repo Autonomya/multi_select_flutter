@@ -121,16 +121,27 @@ class MultiSelectChipDisplay<V> extends StatelessWidget {
                       },
                     ),
             )
-          : Wrap(
-              alignment:
-                  isItemImage ? WrapAlignment.center : WrapAlignment.start,
-              spacing: isItemImage ? 5.0 : 0,
-              runSpacing: isItemImage ? 5.0 : 0,
-              children: items != null
-                  ? items!.map((item) => _buildItem(item!, context)).toList()
-                  : <Widget>[
-                      Container(),
-                    ],
+          : Container(
+              height: height ?? 120.0,
+              child: Scrollbar(
+                thumbVisibility: true,
+                child: SingleChildScrollView(
+                  child: Wrap(
+                    alignment: isItemImage
+                        ? WrapAlignment.center
+                        : WrapAlignment.start,
+                    spacing: isItemImage ? 5.0 : 0,
+                    runSpacing: isItemImage ? 5.0 : 0,
+                    children: items != null
+                        ? items!
+                            .map((item) => _buildItem(item!, context))
+                            .toList()
+                        : <Widget>[
+                            Container(),
+                          ],
+                  ),
+                ),
+              ),
             ),
     );
   }
