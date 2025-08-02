@@ -122,7 +122,7 @@ class MultiSelectChipDisplay<V> extends StatelessWidget {
                     ),
             )
           : Container(
-              height: height ?? 120.0,
+              height: height ?? 80.0,
               child: Scrollbar(
                 thumbVisibility: true,
                 child: SingleChildScrollView(
